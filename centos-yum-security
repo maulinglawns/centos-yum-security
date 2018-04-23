@@ -92,7 +92,7 @@ while getopts ":dhy" opt; do
             assumeYes="true"
             ;;
         *)
-            echo -e "Unknown option. '-d' and '-h' allowed. Usage:\n$usage"
+            echo -e "Unknown option. '-d', '-y' and '-h' allowed. Usage:\n$usage"
             exit 3
             ;;
     esac
