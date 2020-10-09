@@ -1,7 +1,6 @@
 #!/bin/bash
 
-function yumInstall()
-{
+function yumInstall() {
     # Install packages from $pkgFile
     echo "Installing security updates..."
     while read -r package; do
@@ -106,7 +105,6 @@ See: https://github.com/wied03/centos-package-cron for instructions"
     exit 2
 fi
 
-# Need to be root
 if [[ $EUID != 0 ]]; then
     echo "You need to be root. Exiting"
     exit 1
