@@ -8,7 +8,7 @@ function yumInstall()
         echo "Updating $package"
         # Redirect stderr to stdout and filter out annoying warnings about
         # deltarpms plus false positives about missing arguments
-        yum -q -y update "$package" 2>&1 | egrep -v '(delta|argument)'
+        yum -q -y update "$package" 2>&1 | grep -E -v '(delta|argument)'
     done < "$pkgFile"
     exit 0
 }
@@ -18,7 +18,7 @@ this="centos-yum-security"
 usage="$this [-d] [-h] [-y]"
 
 helptext="
-$(echo $usage)
+$usage
 
 Emulate the yum --security plugin for CentOS 7.
 Basically a wrapper around 'centos-package-cron' (https://github.com/wied03/centos-package-cron)
@@ -92,7 +92,7 @@ while getopts ":dhy" opt; do
             assumeYes="true"
             ;;
         *)
-            echo -e "Unknown option. '-d', '-y' and '-h' allowed. Usage:\n$usage"
+            echo -e "Unknown option. '-d', '-y' and '-h' allowed. Usage:\\n$usage"
             exit 3
             ;;
     esac
@@ -100,14 +100,14 @@ done
 
 shift $(($OPTIND-1))
 
-if ! which centos-package-cron &> /dev/null; then
+if ! command -v centos-package-cron &> /dev/null; then
     echo "'centos-package-cron' not installed. 
 See: https://github.com/wied03/centos-package-cron for instructions"
     exit 2
 fi
 
 # Need to be root
-if (( $EUID != 0 )); then
+if [[ $EUID != 0 ]]; then
     echo "You need to be root. Exiting"
     exit 1
 fi
@@ -117,7 +117,7 @@ pkgFile="/root/centos-sec-updates"
 
 # Gather information about packages needed for security. Write to $pkgFile
 echo "Gathering information about packages needed for security. This will take a while..."
-centos-package-cron --output stdout --forceold | sed -nE '/.*http.*$/! s/^\* (.*$)/\1/p' | egrep -v '[MWTFS][a-z]{2} [FDJSNAOM][a-z]{2} ' | sort -u > "$pkgFile"
+centos-package-cron --output stdout --forceold | sed -nE '/.*http.*$/! s/^\* (.*$)/\1/p' | grep -E -v '[MWTFS][a-z]{2} [FDJSNAOM][a-z]{2} ' | sort -u > "$pkgFile"
 
 # Check if we have content in $pkgFile
 packages=$(wc -l "$pkgFile" | awk '{ print $1 }')
